@@ -1,10 +1,18 @@
 # Vaatimusmäärittely
-##Sovelluksen tarkoitus
-Sovelluksen avulla on tarkoitus korjata kielioppivirheet sille annetuissa lauseissa
+
+## Sovelluksen tarkoitus
+Sovelluksen on tarkoitus olla varasto, sekä visualisointityökalu erilaisille todennäköisyysjakaumille, eritoten toistokokeille ja binomitodennäköisyyksille.
 
 ## Käyttäjät
+Sovelluksella on vain normaaleja käyttäjiä. Pääkäyttäjän mahdollisuus voidaan lisätä mikäli nähdään tarpeelliseksi.
 
-Sovelluksella on vain normaaleja käyttäjiä
+## Perusversion tarjoama toiminnallisuus
 
-## Käyttöliittymäluonnos 
-Ohjelmaan kirjadutaan sisään ja sinne voi ladata tekstitiedostoja
+### Ennen kirjautumista
+
+Ohjelma voi tarjota toiminnallisuutta ilman käyttäjiäkin, mutta varastointia varten on oltava olemassa käyttäjähallinta
+
+### Kirjautumisen jälkeen
+
+Kirjautumisen jälkeen käyttäjillä on olemassa kaikki toiminnallisuus ja mahdollisuus tallettaa tekemiään todennäköisyyskokeita.
+
