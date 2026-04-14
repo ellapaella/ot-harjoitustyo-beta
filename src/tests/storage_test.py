@@ -1,6 +1,7 @@
 import unittest
 import storage
 
+
 class TestStorage(unittest.TestCase):
     def setUp(self):
         self.store1 = storage.Storage()

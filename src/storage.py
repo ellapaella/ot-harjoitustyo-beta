@@ -12,5 +12,6 @@ class Storage():
         else:
             for user in self.storage:
                 print(user)
+
     def list_length(self):
         return len(self.storage)

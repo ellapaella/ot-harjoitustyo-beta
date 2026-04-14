@@ -1,10 +1,12 @@
 import storage
 
+
 def print_menu():
     print("1 - Lisää toistokoe")
     print("2 - Luo uusi käyttäjä")
     print("3 - Listaa käyttäjät")
     print("0 - Lopeta")
+
 
 def launch():
     store1 = storage.Storage()
