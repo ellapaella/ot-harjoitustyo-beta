@@ -3,8 +3,8 @@ class Storage():
     def __init__(self):
         self.storage = []
 
-    def add_user(self, name):
-        self.storage.append(name)
+    def add_user(self, user):
+        self.storage.append(user)
 
     def list_users(self):
         if len(self.storage) == 0:

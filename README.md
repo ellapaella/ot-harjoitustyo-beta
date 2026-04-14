@@ -9,3 +9,6 @@ Ja täällä [vaatimusmäärittely](https://github.com/ellapaella/ot-harjoitusty
 Täällä [työaikakirjanpito](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/tyoaikakirjanpito.md)
 
 Täällä [changelog](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/changelog.md)
+
+Tääläl [arkkitehtuuri](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/arkkitehtuuri.md)
+

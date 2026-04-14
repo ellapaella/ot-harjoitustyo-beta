@@ -1,4 +1,6 @@
 import storage
+from user import User
+import graph
 
 
 def print_menu():
@@ -17,11 +19,25 @@ def launch():
         command = input("Komento: ")
 
         if command == '1':
-            print("Toiminnallisuus ei vielä voimassa")
+            nominator = input("Anna nimittäjä: ")
+            denominator = input("Anna osoittaja: ")
+            repeats = input("Anna toistojen määrä: ")
+            coin_test = graph.Graph(nominator, denominator, repeats)
+
+            to_whom = input("Kelle lisätään? ")
+
+            for user in store1.storage:
+                if user.name == to_whom:
+                    user.add_graph(coin_test)
+
         elif command == '2':
             username = input("Anna käyttäjänimi: ")
             if username != "":
-                store1.add_user(username)
+                password = input("Anna salasana: ")
+                if len(password) > 8:
+                    store1.add_user(User(username, password))
+                else:
+                    print("Salasanan oltava vähintään 8 merkkiä")
             else:
                 print("Ei käypä nimi")
         elif command == "3":
