@@ -2,6 +2,7 @@ import unittest
 from maksukortti import Maksukortti
 
 class TestMaksukortti(unittest.TestCase):
+    
     def setUp(self):
         self.maksukortti = Maksukortti(1000)
 
