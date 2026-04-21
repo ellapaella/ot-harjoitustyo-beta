@@ -1,14 +1,34 @@
-# Todennäköisyysohjelma (Ohjelmistotekniikka, harjoitustyö)
+# Probability visualizer (Ohjelmistotekniikka, harjoitustyö)
 
-Todennäköisyysohjelma sovelluksen tarkoituksena on pitää kirjaa käyttäjän luomista **todennäköisyysjakaumista** ja visualisoida niitä graafisessa käyttöliittymässä.
+The probability visualizer is meant to maintain user's own **probability distribution tests** and visualize them in GUI.
 
-Voit kokeilla ohjelmaa lataamalla tämän repon ja suorittamalla sen jälkeen projektin juurikansiossa komentorivillä `poetry install` ja sen jälkeen `python3 src/main.py`.
+You can try the program out by cloning the repository with 
 
-- [vaatimusmäärittely](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/vaatimusmaarittely.md)
+```bash
+git clone https://github.com/ellapaella/ot-harjoitustyo-beta.git
+```
 
-- [työaikakirjanpito](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/tyoaikakirjanpito.md)
+or if you have SSH set up
 
-- [changelog](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/changelog.md)
+```bash
+git clone git@github.com:ellapaella/ot-harjoitustyo-beta.git
+```
 
-- [arkkitehtuuri](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/arkkitehtuuri.md)
+After cloning use these commands in the repository root
+
+```bash
+poetry install --without dev
+```
+
+```bash
+poetry run invoke start
+```
+
+- [Requirement specifications](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/documentation/requirement_specifications.md)
+
+- [Changelog](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/changelog.md)
+
+- [Architecture](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/architecture.md)
+
+- [Work time](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/documentation/worktime.md)
 
