@@ -4,11 +4,11 @@ Todennäköisyysohjelma sovelluksen tarkoituksena on pitää kirjaa käyttäjän
 
 Voit kokeilla ohjelmaa lataamalla tämän repon ja suorittamalla sen jälkeen projektin juurikansiossa komentorivillä `poetry install` ja sen jälkeen `python3 src/main.py`.
 
-Ja täällä [vaatimusmäärittely](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/vaatimusmaarittely.md)
+- [vaatimusmäärittely](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/vaatimusmaarittely.md)
 
-Täällä [työaikakirjanpito](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/tyoaikakirjanpito.md)
+- [työaikakirjanpito](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/tyoaikakirjanpito.md)
 
-Täällä [changelog](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/changelog.md)
+- [changelog](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/changelog.md)
 
-Tääläl [arkkitehtuuri](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/arkkitehtuuri.md)
+- [arkkitehtuuri](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/arkkitehtuuri.md)
 
