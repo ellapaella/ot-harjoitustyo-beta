@@ -1,14 +1,12 @@
 ```mermaid   
  classDiagram
 	class User {
-	    String nimi
+	    String username
 	    String password
 	    list graphs
 		}
 	class Graph {
-	    int nominator
-            int denominator
-            int repeats
+	    string name
 		}
 		
     User "1" -- "*" Graph
