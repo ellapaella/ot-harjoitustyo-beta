@@ -25,8 +25,8 @@ After logging in the user can see their saved probability distributions and mani
 - ~~Simple username creation~~ (done)
 - Secure user control into database
 - ~~Simple test distribution creation~~ (done)
-- Simple coin flip test
-- Repeatable coin flip test
+- ~~Simple coin flip test~~ (done)
+- ~~Repeatable coin flip test~~ (done)
 - Simple dice roll test
 - Repeatable dice roll test
 
