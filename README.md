@@ -26,9 +26,9 @@ poetry run invoke start
 
 - [Requirement specifications](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/documentation/requirement_specifications.md)
 
-- [Changelog](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/changelog.md)
+- [Changelog](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/documentation/changelog.md)
 
-- [Architecture](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/dokumentaatio/architecture.md)
+- [Architecture](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/documentation/architecture.md)
 
 - [Work time](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/documentation/worktime.md)
 
