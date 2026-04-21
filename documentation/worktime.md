@@ -8,5 +8,5 @@
 |       | 2h   | Began to work on project, testing
 | 14.4  | 3h   | Worked on project
 | 21.4. | 5h   | Worked on project, changed language to english, updated documents
-| total | 6.5h | 
+| total | 11.5h | 
 

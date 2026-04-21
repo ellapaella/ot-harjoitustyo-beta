@@ -1,12 +1,13 @@
 
 class User:
-    def __init__(self, name: str, password: str):
-        self.name = name
+
+    def __init__(self, username: str, password: str):
+        self.username = username
         self.password = password
-        self.graphs_list = []
+        self.graphs = []
 
     def add_graph(self, graph):
-        self.graphs_list.append(graph)
+        self.graphs.append(graph)
 
     def __str__(self):
-        return f"{self.name}, has saved {len(self.graphs_list)} graphs"
+        return f"{self.username}, has saved {len(self.graphs)} graphs"

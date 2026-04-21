@@ -11,4 +11,4 @@ class TestUser(unittest.TestCase):
         self.assertNotEqual(self.user, None)
 
     def test_user_has_right_name(self):
-        self.assertEqual(self.user.name, "test_user")
+        self.assertEqual(self.user.username, "test_user")

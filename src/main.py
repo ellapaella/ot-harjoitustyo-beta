@@ -1,4 +1,4 @@
-from ui import UI
+from ui import ui
 
 if __name__ == "__main__":
-    UI.launch()
+    ui.launch()
