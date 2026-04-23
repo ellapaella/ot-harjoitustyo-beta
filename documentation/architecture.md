@@ -3,11 +3,12 @@
 	class User {
 	    String username
 	    String password
-	    list graphs
+	    list plots
 		}
-	class Graph {
+	class Plot {
 	    string name
+	    tuple color
 		}
 		
-    User "1" -- "*" Graph
+    User "1" -- "*" Plot
 ```
