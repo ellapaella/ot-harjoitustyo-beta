@@ -16,7 +16,7 @@ git clone https://github.com/ellapaella/ot-harjoitustyo-beta.git
 git clone git@github.com:ellapaella/ot-harjoitustyo-beta.git
 ```
 
-After cloning use these commands in the repository root (the one that has the `src` directory)
+After cloning use these commands in the project root (the one that has the `src` directory)
 
 ```bash
 poetry install
@@ -34,7 +34,7 @@ Run tests
 ```bash
 poetry run invoke test
 ```
-Create a html report of test branch coverage
+Create a html report of test branch coverage (report can be found at path ./htmlcov/index.html in project root)
 
 ```bash
 poetry run invoke coverage-report
@@ -44,7 +44,7 @@ Run pylint check
 ```bash
 poetry run invoke lint
 ```
-Format code as defined by project's .pylintrc file. More info at [PEP 8 style guide](https://peps.python.org/pep-0008/)
+Format code as defined by project's [.pylintrc](https://github.com/ellapaella/ot-harjoitustyo-beta/blob/main/.pylintrc) file. More info at [PEP 8 style guide](https://peps.python.org/pep-0008/)
 
 ```bash
 poetry run invoke format
