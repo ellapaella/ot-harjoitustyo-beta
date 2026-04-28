@@ -16,3 +16,7 @@
 
 - User can create simple coin flip test
 - User can create repeatable coin flip test
+
+## Week 6
+
+- First database integration iteration

@@ -1,9 +1,27 @@
 
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 from db.engine import engine
 
 def add_user(username, password):
-    
+    """
+    Creates a new user in the database.
+
+    Validates username and password before insertion:
+    - Username must be 3–20 characters long
+    - Password must be 8–30 characters long
+
+    Args:
+        username (str): The username to create.
+        password (str): The user's password (expected to be pre-hashed or raw depending on design).
+
+    Raises:
+        ValueError: If username or password does not meet validation rules.
+        ValueError: If the username already exists in the database.
+
+    Returns:
+        None
+    """    
     if not _valid_username(username):
         raise ValueError("Username must be between 3 and 20 characters")
     if not _valid_password(password):
@@ -15,10 +33,16 @@ def add_user(username, password):
                 {"username":username, "passhash":password}
                 )
             conn.commit()
-    except:
-        raise ValueError("Username already in use")
+    except Exception:
+        raise IntegrityError("Username already in use")
             
 def userlist():
+    """
+    Retrieves all usernames from the Users table.
+
+    Returns:
+        list[str]: A list of all usernames in the database.
+    """
     with engine.connect() as conn:
         result = conn.execute(text("SELECT username FROM Users"))
         return [row[0] for row in result.fetchall()]

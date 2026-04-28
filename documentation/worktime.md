@@ -8,5 +8,6 @@
 |       | 2h   | Began to work on project, testing
 | 14.4  | 3h   | Worked on project
 | 21.4. | 5h   | Worked on project, changed language to english, updated documents
-| total | 11.5h | 
+| 28.4. | 11h  | Updated application to start using database
+| total | 22.5h | 
 
