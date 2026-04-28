@@ -1,4 +1,11 @@
+
+from dotenv import load_dotenv
+load_dotenv()
+
 from ui import ui
 
-if __name__ == "__main__":
+def launch():
     ui.launch()
+
+if __name__ == "__main__":
+    launch()
