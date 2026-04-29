@@ -13,11 +13,11 @@ def add_user(username, password):
 
     Args:
         username (str): The username to create.
-        password (str): The user's password (expected to be pre-hashed or raw depending on design).
+        password (str): The user's password (stored as hash).
 
     Raises:
         ValueError: If username or password does not meet validation rules.
-        ValueError: If the username already exists in the database.
+        IntegrityError: If the username already exists in the database.
 
     Returns:
         None
@@ -33,8 +33,8 @@ def add_user(username, password):
                 {"username":username, "passhash":password}
                 )
             conn.commit()
-    except Exception:
-        raise IntegrityError("Username already in use")
+    except IntegrityError:
+        raise ValueError("Username already in use")
             
 def userlist():
     """
