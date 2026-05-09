@@ -12,5 +12,7 @@ CREATE TABLE Plots (
     created TIMESTAMP DEFAULT NOW(), 
     owner_id INTEGER REFERENCES Users, 
     plot_name TEXT, 
-    description TEXT
+    description TEXT,
+    distribution_type TEXT,
+    parameters JSONB
 );

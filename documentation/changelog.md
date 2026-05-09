@@ -20,3 +20,15 @@
 ## Week 6
 
 - First database integration iteration
+
+## Week 7
+
+- Implemented fully functional GUI
+    - User can create an account
+    - User can login to account
+    - User can logout from session
+    - When logged in:
+        - User can view different probability distributions
+        - User can modify probability distributions
+        - User can save probability distributions
+        - User can delete probability distributions

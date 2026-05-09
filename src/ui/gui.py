@@ -1,10 +1,15 @@
 import sys
+from db import storage
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QApplication, QDesktopWidget, QWidget, QDialog, 
-    QVBoxLayout, QPushButton, QLabel, QLineEdit, QMessageBox
+    QVBoxLayout, QHBoxLayout, QFormLayout, 
+    QPushButton, QLabel, QLineEdit, QMessageBox, QSpinBox, QDoubleSpinBox, QListWidget,
 )
-from db import storage
+import numpy as np
+from scipy.stats import norm, binom, poisson
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 
 def launch():
@@ -18,6 +23,12 @@ def launch():
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
+
+def center_window(window):
+    qr = window.frameGeometry()
+    cp = QDesktopWidget().availableGeometry().center()
+    qr.moveCenter(cp)
+    window.move(qr.topLeft())
 
 class MainWindow(QWidget):
     """
@@ -54,22 +65,17 @@ class MainWindow(QWidget):
         self.signup_btn.clicked.connect(self.open_signup_window)
         layout.addWidget(self.signup_btn)
 
-        preview_btn = QPushButton("Preview Distributions")
-        preview_btn.clicked.connect(self.open_preview_window)
-        layout.addWidget(preview_btn)
+        self.my_plots_btn = QPushButton("My Plots")
+        self.my_plots_btn.clicked.connect(self.open_my_plots_window)
+        self.my_plots_btn.hide()
+        layout.addWidget(self.my_plots_btn)
 
         quit_btn = QPushButton("Quit")
         quit_btn.clicked.connect(self.close_window)
         layout.addWidget(quit_btn)
 
         self.setLayout(layout)
-        self.center_window()
-
-    def center_window(self):
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
+        center_window(self)
 
     def open_login_window(self):
         """
@@ -88,6 +94,7 @@ class MainWindow(QWidget):
             self.login_btn.clicked.connect(self.logout_user)
 
             self.signup_btn.hide()
+            self.my_plots_btn.show()
 
     def logout_user(self):
         self.current_user_id = None
@@ -100,6 +107,7 @@ class MainWindow(QWidget):
         self.login_btn.clicked.connect(self.open_login_window)
 
         self.signup_btn.show()
+        self.my_plots_btn.hide()
 
     def open_signup_window(self):
         """
@@ -108,14 +116,9 @@ class MainWindow(QWidget):
         dialog = SignupDialog()
         dialog.exec_()
 
-    def open_preview_window(self):
-        """
-        Placeholder for probability distribution visualization.
-
-        Future:
-            Should open a new window displaying distributions.
-        """
-        print("Preview clicked")
+    def open_my_plots_window(self):
+        dialog = MyPlotsDialog(self.current_user_id)
+        dialog.exec_()
 
     def close_window(self):
         """
@@ -204,7 +207,7 @@ class SignupDialog(QDialog):
 
     def handle_signup(self):
         """
-        Calls storage.add_user(username, password).
+        Calls storage.create_user(username, password).
 
         Shows success or error popup based on result.
         """
@@ -212,7 +215,7 @@ class SignupDialog(QDialog):
         password = self.password_input.text()
 
         try:
-            storage.add_user(username, password)
+            storage.create_user(username, password)
             QMessageBox.information(
             self,
             "Success",
@@ -226,3 +229,350 @@ class SignupDialog(QDialog):
                 "Error",
                 str(e)
         )
+
+class MyPlotsDialog(QDialog):
+    """
+    Plot Viewer window for creating, viewing, and saving probability distributions.
+    """
+    def __init__(self, user_id):
+        super().__init__()
+        self.user_id = user_id
+
+        self.setWindowTitle("Plot Viewer")
+        self.setGeometry(200, 200, 1000, 700)
+        center_window(self)
+
+        main_layout = QHBoxLayout()
+
+        # -------- Left Panel -------- #
+        left_layout = QVBoxLayout()
+
+        # Distribution selection
+        distribution_label = QLabel("Distributions")
+        left_layout.addWidget(distribution_label)
+
+        self.distribution_list = QListWidget()
+        self.distribution_list.addItems([
+            "Normal Distribution",
+            "Binomial Distribution",
+            "Poisson Distribution"
+        ])
+        self.distribution_list.currentItemChanged.connect(
+            self.on_distribution_selected
+        )
+
+        left_layout.addWidget(self.distribution_list)
+
+        # Saved plots section
+        saved_label = QLabel("Saved Plots")
+        left_layout.addWidget(saved_label)
+
+        self.saved_plots_list = QListWidget()
+        self.saved_plots_list.currentItemChanged.connect(
+            self.on_saved_plot_selected
+        )
+
+        left_layout.addWidget(self.saved_plots_list)
+
+        delete_btn = QPushButton("Delete Plot")
+        delete_btn.clicked.connect(self.delete_plot)
+        left_layout.addWidget(delete_btn)
+
+        # -------- Right Panel -------- #
+        right_layout = QVBoxLayout()
+
+        # Parameter controls
+        self.parameter_layout = QFormLayout()
+        right_layout.addLayout(self.parameter_layout)
+
+        # Plot display area
+        self.figure = Figure()
+        self.canvas = FigureCanvas(self.figure)
+        right_layout.addWidget(self.canvas)
+
+        # Save controls
+        self.plot_name_input = QLineEdit()
+        self.plot_name_input.setPlaceholderText("Enter plot name")
+        right_layout.addWidget(self.plot_name_input)
+
+        self.plot_description_input = QLineEdit()
+        self.plot_description_input.setPlaceholderText("Enter plot description (optional)")
+        right_layout.addWidget(self.plot_description_input)
+
+        save_btn = QPushButton("Save Plot")
+        save_btn.clicked.connect(self.save_current_plot)
+        right_layout.addWidget(save_btn)
+
+        # -------- Assemble Layout -------- #
+        main_layout.addLayout(left_layout, 1)
+        main_layout.addLayout(right_layout, 3)
+
+        self.setLayout(main_layout)
+        self.load_plots()
+
+    def on_distribution_selected(self):
+        """
+        Updates parameter controls based on selected distribution.
+        """
+        selected = self.distribution_list.currentItem()
+
+        if not selected:
+            return
+
+        distribution = selected.text()
+
+        # Clear old parameter controls
+        while self.parameter_layout.rowCount():
+            self.parameter_layout.removeRow(0)
+
+        if distribution == "Normal Distribution":
+            self.add_normal_parameters()
+
+        elif distribution == "Binomial Distribution":
+            self.add_binomial_parameters()
+
+        elif distribution == "Poisson Distribution":
+            self.add_poisson_parameters()
+
+        self.update_plot_placeholder()
+
+    def on_saved_plot_selected(self):
+        selected = self.saved_plots_list.currentItem()
+
+        if not selected:
+            return
+
+        plot_id = selected.data(Qt.UserRole)
+
+        plot = storage.get_plot_by_id(plot_id)
+
+        if not plot:
+            return
+
+        distribution_type = plot[3]
+        parameters = plot[4]
+
+        # Select correct distribution
+        matching_items = self.distribution_list.findItems(
+            distribution_type,
+            Qt.MatchExactly
+        )
+
+        if matching_items:
+            self.distribution_list.setCurrentItem(
+                matching_items[0]
+            )
+
+        # Populate parameters
+        if distribution_type == "Normal Distribution":
+            self.mean_input.setValue(parameters["mean"])
+            self.std_input.setValue(parameters["std_dev"])
+
+        elif distribution_type == "Binomial Distribution":
+            self.n_input.setValue(parameters["n"])
+            self.p_input.setValue(parameters["p"])
+
+        elif distribution_type == "Poisson Distribution":
+            self.lambda_input.setValue(parameters["lambda"])
+
+        self.plot_name_input.setText(plot[1])
+        self.plot_description_input.setText(plot[2])
+
+        self.update_plot_placeholder()
+    
+    def update_plot_placeholder(self):
+        
+        """
+        Draws selected distribution using current parameters.
+        """
+        selected = self.distribution_list.currentItem()
+
+        if not selected:
+            return
+
+        distribution = selected.text()
+
+        self.figure.clear()
+        ax = self.figure.add_subplot(111)
+
+        if distribution == "Normal Distribution":
+            mean = self.mean_input.value()
+            std = self.std_input.value()
+
+            x_min = mean - max(4 * std, 10)
+            x_max = mean + max(4 * std, 10)
+
+            x = np.linspace(x_min, x_max, 400)
+            y = norm.pdf(x, mean, std)
+
+            ax.plot(x, y)
+            ax.set_title("Normal Distribution")
+
+            ax.set_xlim(mean - 10, mean + 10)
+            ax.set_ylim(0, max(y) * 1.1)
+
+        elif distribution == "Binomial Distribution":
+            n = self.n_input.value()
+            p = self.p_input.value()
+
+            x = np.arange(0, n + 1)
+            y = binom.pmf(x, n, p)
+
+            ax.bar(x, y)
+            ax.set_title("Binomial Distribution")
+
+        elif distribution == "Poisson Distribution":
+            lam = self.lambda_input.value()
+
+            x = np.arange(0, max(15, int(lam * 3)))
+            y = poisson.pmf(x, lam)
+
+            ax.bar(x, y)
+            ax.set_title("Poisson Distribution")
+
+        ax.grid(True)
+
+        self.canvas.draw()
+    
+    def add_normal_parameters(self):
+
+        self.mean_input = QDoubleSpinBox()
+        self.mean_input.setRange(-1000, 1000)
+        self.mean_input.setDecimals(2)
+        self.mean_input.setSingleStep(0.1)
+        self.mean_input.setValue(0.0)
+        self.mean_input.valueChanged.connect(self.update_plot_placeholder)
+
+        self.std_input = QDoubleSpinBox()
+        self.std_input.setRange(0.1, 1000)
+        self.std_input.setDecimals(2)
+        self.std_input.setSingleStep(0.1)
+        self.std_input.setValue(1.0)
+        self.std_input.valueChanged.connect(self.update_plot_placeholder)
+
+        self.parameter_layout.addRow("Mean (μ):", self.mean_input)
+        self.parameter_layout.addRow("Std Dev (σ):", self.std_input)
+
+    def add_binomial_parameters(self):
+        
+        self.n_input = QSpinBox()
+        self.n_input.setMinimum(1)
+        self.n_input.setValue(10)
+        self.n_input.valueChanged.connect(self.update_plot_placeholder)
+
+        self.p_input = QDoubleSpinBox()
+        self.p_input.setMinimum(0.0)
+        self.p_input.setMaximum(1.0)
+        self.p_input.setSingleStep(0.01)
+        self.p_input.setValue(0.5)
+        self.p_input.valueChanged.connect(self.update_plot_placeholder)
+
+        self.parameter_layout.addRow("Trials (n):", self.n_input)
+        self.parameter_layout.addRow("Probability (p):", self.p_input)
+
+    def add_poisson_parameters(self):
+        self.lambda_input = QDoubleSpinBox()
+        self.lambda_input.setMinimum(0.1)
+        self.lambda_input.setValue(1.0)
+        self.lambda_input.valueChanged.connect(self.update_plot_placeholder)
+
+        self.parameter_layout.addRow("Lambda (λ):", self.lambda_input)
+
+    def save_current_plot(self):
+        selected = self.distribution_list.currentItem()
+
+        if not selected:
+            QMessageBox.warning(self, "Error", "Select a distribution first.")
+            return
+
+        distribution = selected.text()
+
+        if distribution == "Normal Distribution":
+            parameters = {
+                "mean": self.mean_input.value(),
+                "std_dev": self.std_input.value()
+            }
+
+        elif distribution == "Binomial Distribution":
+            parameters = {
+                "n": self.n_input.value(),
+                "p": self.p_input.value()
+            }
+
+        elif distribution == "Poisson Distribution":
+            parameters = {
+                "lambda": self.lambda_input.value()
+            }
+
+        plot_name = self.plot_name_input.text().strip()
+
+        if not plot_name:
+            QMessageBox.warning(self, "Error", "Plot name cannot be empty.")
+            return
+    
+        storage.create_plot(
+            owner_id=self.user_id,
+            plot_name=plot_name,
+            description=self.plot_description_input.text().strip(),
+            distribution_type=distribution,
+            parameters=parameters
+        )
+        QMessageBox.information(
+            self,
+            "Success",
+            "Plot saved successfully."
+        )
+
+        self.load_plots()
+    
+    def load_plots(self):
+        """
+        Loads user's saved plots into saved plots list.
+        """
+        self.saved_plots_list.clear()
+
+        plots = storage.get_user_plots(self.user_id)
+
+        for plot in plots:
+            plot_id = plot[0]
+            plot_name = plot[1]
+            distribution_type = plot[3]
+
+            item_text = f"{plot_name} ({distribution_type})"
+
+            self.saved_plots_list.addItem(item_text)
+
+            item = self.saved_plots_list.item(
+                self.saved_plots_list.count() - 1
+            )
+            item.setData(Qt.UserRole, plot_id)
+
+    def delete_plot(self):
+        selected = self.saved_plots_list.currentItem()
+
+        if not selected:
+            QMessageBox.warning(
+                self,
+                "Error",
+                "Select a saved plot to delete."
+            )
+            return
+
+        plot_id = selected.data(Qt.UserRole)
+
+        confirmation = QMessageBox.question(
+            self,
+            "Confirm Delete",
+            "Are you sure you want to delete this plot?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+
+        if confirmation == QMessageBox.Yes:
+            storage.delete_plot(plot_id)
+
+            QMessageBox.information(
+                self,
+                "Success",
+                "Plot deleted successfully."
+            )
+            self.load_plots()

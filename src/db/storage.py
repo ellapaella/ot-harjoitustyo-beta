@@ -2,9 +2,10 @@
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 import bcrypt
+import json
 from db.engine import engine
 
-def add_user(username:str, password:str):
+def create_user(username:str, password:str):
     """
     Creates a new user in the database.
 
@@ -54,19 +55,110 @@ def authenticate_user(username:str, password:str):
             return result[0]
         else:
             return None # incorrect password
-            
-def userlist():
+        
+def create_plot(owner_id: int, plot_name: str, description: str,
+                distribution_type: str, parameters: dict):
     """
-    Retrieves all usernames from the Users table.
+    Creates and saves a new plot for a specific user.
+
+    Args:
+        owner_id (int): ID of the user creating the plot.
+        plot_name (str): Name of the plot.
+        description (str): Optional user description of the plot.
+        distribution_type (str): Type of probability distribution
+            (e.g. normal, binomial, poisson).
+        parameters (dict): Distribution parameters stored as JSON.
+
+    Raises:
+        ValueError: If plot_name is empty.
 
     Returns:
-        list[str]: A list of all usernames in the database.
+        None
+    """
+
+    if not plot_name.strip():
+        raise ValueError("Plot name cannot be empty")
+
+    with engine.connect() as conn:
+        conn.execute(
+            text("""
+                INSERT INTO Plots 
+                (owner_id, plot_name, description, distribution_type, parameters)
+                VALUES
+                (:owner_id, :plot_name, :description, :distribution_type, :parameters)
+            """),
+            {
+                "owner_id": owner_id,
+                "plot_name": plot_name,
+                "description": description,
+                "distribution_type": distribution_type,
+                "parameters": json.dumps(parameters)
+            }
+        )
+        conn.commit()
+
+def get_user_plots(owner_id: int):
+    """
+    Retrieves all plots belonging to a specific user.
+
+    Args:
+        owner_id (int): ID of the plot owner.
+
+    Returns:
+        list: A list of database rows containing:
+            - plot id
+            - plot name
+            - description
+            - distribution type
+            - parameters
+
+    Notes:
+        Results are ordered by newest first.
     """
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT username FROM Users"))
-        return [row[0] for row in result.fetchall()]
+        result = conn.execute(
+            text("""
+                SELECT id, plot_name, description, distribution_type, parameters
+                FROM Plots
+                WHERE owner_id = :owner_id
+                ORDER BY created DESC
+            """),
+            {"owner_id": owner_id}
+        )
 
+        return result.fetchall()
+    
+def get_plot_by_id(plot_id: int):
+    """
+    Retrieves a single saved plot by its ID.
 
+    Returns:
+        tuple: Plot record or None
+    """
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("""
+                SELECT id, plot_name, description,
+                       distribution_type, parameters
+                FROM Plots
+                WHERE id = :plot_id
+            """),
+            {"plot_id": plot_id}
+        ).fetchone()
+
+        return result
+    
+def delete_plot(plot_id: int):
+    """
+    Deletes a plot by ID.
+    """
+    with engine.connect() as conn:
+        conn.execute(
+            text("DELETE FROM Plots WHERE id = :plot_id"),
+            {"plot_id": plot_id}
+        )
+        conn.commit()
+    
 #--------- User validation methods ---------#
 
 def _valid_username(username):

@@ -1,5 +1,5 @@
 
-# Working times
+# Work hour timetable
 
 | date  | time | what was achieved |
 | :----:|:-----| :-----|
@@ -9,5 +9,10 @@
 | 14.4  | 3h   | Worked on project
 | 21.4. | 5h   | Worked on project, changed language to english, updated documents
 | 28.4. | 11h  | Updated application to start using database
-| total | 22.5h | 
+| 5.5.  | 3h   | Learned to use PyQt
+| 8.5.  | 3h   | Worked on implementing a functional GUI
+| 9.5.  | 6h   | Implemented a functional GUI, updated requirement specifications
+|       | 6h   | Refactored codebase, re-distributed bloated GUI file to other files
+| 10.5. |      |
+| total | 40.5h | 
 
