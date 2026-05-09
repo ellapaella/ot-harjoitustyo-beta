@@ -19,7 +19,6 @@ def launch():
     window.show()
     sys.exit(app.exec_())
 
-
 class MainWindow(QWidget):
     """
     Main application window.
@@ -27,28 +26,33 @@ class MainWindow(QWidget):
     Displays the welcome screen and provides navigation
     to login, signup, and probability preview features.
     """
-
     def __init__(self):
         """
         Initialize the main window UI components.
         """
         super().__init__()
+        self.current_user_id = None
+        self.current_username = None
         self.setWindowTitle("Probability App")
         self.setGeometry(200, 200, 450, 300)
 
         layout = QVBoxLayout()
 
+        self.user_status_label = QLabel("Not logged in")
+        self.user_status_label.setAlignment(Qt.AlignRight)
+        layout.addWidget(self.user_status_label)
+
         welcome_label = QLabel("Welcome to Probability Visualizer")
         welcome_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(welcome_label)
 
-        login_btn = QPushButton("Login")
-        login_btn.clicked.connect(self.open_login_window)
-        layout.addWidget(login_btn)
+        self.login_btn = QPushButton("Login")
+        self.login_btn.clicked.connect(self.open_login_window)
+        layout.addWidget(self.login_btn)
 
-        signup_btn = QPushButton("Sign Up")
-        signup_btn.clicked.connect(self.open_signup_window)
-        layout.addWidget(signup_btn)
+        self.signup_btn = QPushButton("Sign Up")
+        self.signup_btn.clicked.connect(self.open_signup_window)
+        layout.addWidget(self.signup_btn)
 
         preview_btn = QPushButton("Preview Distributions")
         preview_btn.clicked.connect(self.open_preview_window)
@@ -70,14 +74,32 @@ class MainWindow(QWidget):
     def open_login_window(self):
         """
         Handle login button click.
-
-        Placeholder for login functionality.
-
-        Future:
-            Should open login dialog and call:
-            storage.login(username, password)
         """
-        print("Login clicked")
+        dialog = LoginDialog()
+        result = dialog.exec_()
+
+        if result == QDialog.Accepted:
+            self.current_user_id = dialog.user_id
+            self.current_username = dialog.username
+            self.user_status_label.setText(f"Logged in as: {self.current_username}")
+
+            self.login_btn.setText("Logout")
+            self.login_btn.clicked.disconnect()
+            self.login_btn.clicked.connect(self.logout_user)
+
+            self.signup_btn.hide()
+
+    def logout_user(self):
+        self.current_user_id = None
+        self.current_username = None
+
+        self.user_status_label.setText("Not logged in")
+
+        self.login_btn.setText("Login")
+        self.login_btn.clicked.disconnect()
+        self.login_btn.clicked.connect(self.open_login_window)
+
+        self.signup_btn.show()
 
     def open_signup_window(self):
         """
@@ -101,6 +123,59 @@ class MainWindow(QWidget):
         """
         self.close()
 
+class LoginDialog(QDialog):
+    """
+    Dialog window for user login.
+    """
+    def __init__(self):
+        super().__init__()
+        self.user_id = None
+        self.username = None
+        self.setWindowTitle("Login")
+
+        layout = QVBoxLayout()
+
+        self.username_input = QLineEdit()
+        self.username_input.setPlaceholderText("Username")
+        layout.addWidget(self.username_input)
+
+        self.password_input = QLineEdit()
+        self.password_input.setPlaceholderText("Password")
+        self.password_input.setEchoMode(QLineEdit.Password)
+        layout.addWidget(self.password_input)
+
+        login_btn = QPushButton("Login")
+        login_btn.clicked.connect(self.handle_login)
+        layout.addWidget(login_btn)
+
+        self.setLayout(layout)
+
+    def handle_login(self):
+        """
+        Calls storage.authenticate_user(username, password).
+        """
+        username = self.username_input.text()
+        password = self.password_input.text()
+
+        user_id =  storage.authenticate_user(username, password)
+
+        if user_id:
+            self.user_id = user_id
+            self.username = username
+
+            QMessageBox.information(
+            self,
+            "Success",
+            f"Welcome {username}!"
+        )
+            self.accept()  # closes dialog
+        
+        else:
+            QMessageBox.warning(
+                self,
+                "Error",
+                "Invalid username or password"
+        )
 
 class SignupDialog(QDialog):
     """

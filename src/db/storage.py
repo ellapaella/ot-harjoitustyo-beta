@@ -1,9 +1,10 @@
 
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
+import bcrypt
 from db.engine import engine
 
-def add_user(username, password):
+def add_user(username:str, password:str):
     """
     Creates a new user in the database.
 
@@ -11,13 +12,9 @@ def add_user(username, password):
     - Username must be 3–20 characters long
     - Password must be 8–30 characters long
 
-    Args:
-        username (str): The username to create.
-        password (str): The user's password (stored as hash).
-
     Raises:
         ValueError: If username or password does not meet validation rules.
-        IntegrityError: If the username already exists in the database.
+        ValueError: If the username already exists in the database.
 
     Returns:
         None
@@ -26,15 +23,37 @@ def add_user(username, password):
         raise ValueError("Username must be between 3 and 20 characters")
     if not _valid_password(password):
         raise ValueError("Password must be between 8 and 30 characters")
+    
+    passhash = _hash_password(password)
+
     try:
         with engine.connect() as conn:
             conn.execute(
                 text("INSERT INTO Users (username, passhash) VALUES (:username, :passhash)"),
-                {"username":username, "passhash":password}
+                {"username":username, "passhash":passhash}
                 )
             conn.commit()
     except IntegrityError:
         raise ValueError("Username already in use")
+    
+def authenticate_user(username:str, password:str): 
+    """
+    Returns:
+        User_id if credentials are valid, None otherwise.
+    """
+    with engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT id, passhash FROM Users WHERE username = :username"),
+            {"username": username}
+        ).fetchone()
+
+        if result is None:
+            return None # username not found
+    
+        if _verify_password(password, result[1]):
+            return result[0]
+        else:
+            return None # incorrect password
             
 def userlist():
     """
@@ -55,3 +74,24 @@ def _valid_username(username):
 
 def _valid_password(password):
     return len(password) >= 8 and len(password) <= 30
+
+#--------- Password hashing and verifying methods ---------#
+
+def _hash_password(password: str):
+    """
+    Hash a plaintext password using bcrypt.
+    """
+    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    return hashed.decode()
+
+def _verify_password(password: str, hashed: str):
+    """
+    Verify a plaintext password against a stored hash.
+
+    Returns:
+        bool: True if password matches, False otherwise.
+    """
+    try:
+        return bcrypt.checkpw(password.encode(), hashed.encode())
+    except Exception:
+        return False
