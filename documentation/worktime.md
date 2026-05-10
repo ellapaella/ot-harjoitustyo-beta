@@ -13,6 +13,5 @@
 | 8.5.  | 3h   | Worked on implementing a functional GUI
 | 9.5.  | 6h   | Implemented a functional GUI, updated requirement specifications
 |       | 6h   | Refactored codebase, re-distributed bloated GUI file to other files
-| 10.5. |      |
-| total | 40.5h | 
-
+| 10.5. | 6h   | Wrote tests, Updated documentation, Fixed bugs
+| total | 46.5h |

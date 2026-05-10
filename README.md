@@ -22,27 +22,21 @@ After cloning use these commands in the project root (the one that has the `src`
 poetry install
 ```
 
-You need Postgresql. Create a database for the project in psql.
+You need Postgresql for the application. You can install it with XXX.
 
-In psql run the following command replacing the "name_of_database" with a name of your choosing:
+## Pre-Running 
 
-`CREATE DATABASE name_of_database;`
+Build the databases after installing postgresql. Uses default user and default database name.
 
-This should create a database for the project.
+```bash
+poetry run invoke build
+```
 
-Now return to command line with the `\q` and feed your database with the `schema.sql` file you 
-downloaded with the project. Use the following command (again inserting the name of database here, 
-otherwise it will create the tables to your default database which most likely will be your username):
+Build the databases with custom database name. The test database will have a "_test" suffix.
 
-`psql name_of_database < schema.sql`
-
-This creates the necessary tables for you to use the program locally.
-
-Now add the following line to .env file in the project root and 
-replace the "name_of_database" with the database name you created:
-
-`DATABASE_URL=postgresql:///name_of_database`
-
+```bash
+poetry run invoke build --db-name=my_database
+```
 
 ## Running the program
 

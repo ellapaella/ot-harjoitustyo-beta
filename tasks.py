@@ -1,6 +1,20 @@
 from invoke import task
 
 @task
+def build(ctx, db_name="probability_app"):
+    # Create main database
+    ctx.run(f"createdb {db_name}", warn=True)
+
+    # Create test database
+    ctx.run(f"createdb {db_name}_test", warn=True)
+
+    # Apply schema to main database
+    ctx.run(f"psql -d {db_name} -f schema.sql")
+
+    # Apply schema to test database
+    ctx.run(f"psql -d {db_name}_test -f schema.sql")
+
+@task
 def start(ctx):
     ctx.run("python3 src/main.py", pty=True)
 
