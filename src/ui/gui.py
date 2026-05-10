@@ -308,9 +308,7 @@ class MyPlotsDialog(QDialog):
         self.load_plots()
 
     def on_distribution_selected(self):
-        """
-        Updates parameter controls based on selected distribution.
-        """
+        """Updates parameter controls based on selected distribution."""
         selected = self.distribution_list.currentItem()
 
         if not selected:
@@ -334,6 +332,7 @@ class MyPlotsDialog(QDialog):
         self.update_plot_view()
 
     def on_saved_plot_selected(self):
+        """Loads selected saved plot's parameters and updates UI controls."""
         selected = self.saved_plots_list.currentItem()
 
         if not selected:
@@ -373,9 +372,7 @@ class MyPlotsDialog(QDialog):
         self.update_plot_view()
     
     def update_plot_view(self):
-        """
-        Draws selected distribution using current parameters.
-        """
+        """Draws selected distribution using current parameters."""
         selected = self.distribution_list.currentItem()
 
         if not selected:
@@ -420,7 +417,7 @@ class MyPlotsDialog(QDialog):
         self.canvas.draw()
     
     def add_normal_parameters(self):
-
+        """Adds mean and std dev controls to parameter layout."""
         self.mean_input = QDoubleSpinBox()
         self.mean_input.setRange(-1000, 1000)
         self.mean_input.setDecimals(2)
@@ -439,7 +436,7 @@ class MyPlotsDialog(QDialog):
         self.parameter_layout.addRow("Std Dev (σ):", self.std_input)
 
     def add_binomial_parameters(self):
-        
+        """Adds n and p controls to parameter layout."""
         self.n_input = QSpinBox()
         self.n_input.setMinimum(1)
         self.n_input.setValue(10)
@@ -456,6 +453,7 @@ class MyPlotsDialog(QDialog):
         self.parameter_layout.addRow("Probability (p):", self.p_input)
 
     def add_poisson_parameters(self):
+        """Adds lambda control to parameter layout."""
         self.lambda_input = QDoubleSpinBox()
         self.lambda_input.setMinimum(0.1)
         self.lambda_input.setValue(1.0)
@@ -464,9 +462,7 @@ class MyPlotsDialog(QDialog):
         self.parameter_layout.addRow("Lambda (λ):", self.lambda_input)
 
     def load_plots(self):
-        """
-        Loads user's saved plots into saved plots list.
-        """
+        """Loads user's saved plots into saved plots list."""
         self.saved_plots_list.clear()
 
         plots = storage.get_user_plots(self.user_id)
@@ -490,6 +486,7 @@ class MyPlotsDialog(QDialog):
             self.saved_plots_list.setCurrentRow(0)
 
     def save_plot(self):
+        """Saves current plot parameters to database."""
         selected = self.distribution_list.currentItem()
 
         if not selected:
@@ -524,6 +521,7 @@ class MyPlotsDialog(QDialog):
         self.load_plots()
     
     def delete_plot(self):
+        """Deletes selected plot from database."""
         selected = self.saved_plots_list.currentItem()
 
         if not selected:
